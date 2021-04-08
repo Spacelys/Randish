@@ -6,10 +6,6 @@ interface IArrayCreator {
 	randBool: (percentTrue?: number) => Array<boolean>;
 }
 
-interface IObjectCreator<T> {
-	create: () => T;
-}
-
 // These utitlity functions are to be used to delay creation till a future time
 export const randInt = (min: number, max: number) => (seed: Seed): number => seed.randInt(min, max);
 export const randFloat = (min: number, max: number) => (seed: Seed): number => seed.randFloat(min, max);
@@ -56,6 +52,7 @@ export class Seed {
 	}
 	/**
 	 * Returns an integer within the range provided
+	 * up to (but not including) the max value
 	 *
 	 * @param {number} min
 	 * @param {number} max
@@ -64,11 +61,13 @@ export class Seed {
 	 */
 	public randInt(min: number, max: number): number {
 		const delta = max - min;
-		return min + this.nextRaw() % (delta + 1);
+		const p = this.randFloat(0, 1);
+		return min + Math.floor(p * delta);
 	}
 
 	/**
 	 * Returns a float | decimal number within the range provided
+	 * up to (but not including) the max value
 	 *
 	 * @param {number} min
 	 * @param {number} max
@@ -77,7 +76,7 @@ export class Seed {
 	 */
 	public randFloat(min: number, max: number): number {
 		const n = this.nextRaw();
-		const p = n / this.maxRaw();
+		const p = n / this.getUpperBound();
 		return min + (max - min) * p;
 	}
 
@@ -137,6 +136,17 @@ export class Seed {
 	protected maxRaw(): number {
 		return this.params.m - 1;
 	}
+
+	/**
+	 * Gets the upper bound set by our LCG params
+	 *
+	 * @protected
+	 * @returns {number}
+	 * @memberof Seed
+	 */
+	 protected getUpperBound(): number {
+		return this.params.m;
+	 }
 
 	/**
 	 * Get the next raw value from the LCG sequence defined by our params
