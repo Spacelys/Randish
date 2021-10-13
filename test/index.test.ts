@@ -88,6 +88,55 @@ describe('Raddish', () => {
 		});
 	});
 
+	describe('randGrid', () => {
+		const s = new Seed(defaultLcg);
+		it('should have methods for creating bools ints and floats', () => {
+			const gridCreator = s.randGrid(16, 16);
+			expect(gridCreator.randBool).toBeDefined();
+			expect(gridCreator.randInt).toBeDefined();
+			expect(gridCreator.randFloat).toBeDefined();
+		});
+
+		it('should return an 2d array of size mxn', () => {
+			const grid = s.randGrid(16, 8).randInt(0, 10);
+			expect(grid.length).toEqual(8);
+			expect(grid[0].length).toEqual(16);
+		});
+
+		describe('randInt', () => {
+			it('should return only integers', () => {
+				const grid = s.randGrid(16, 8).randInt(0, 10);
+				grid.forEach(line => {
+					line.forEach(val => {
+						expect(val % 1).toEqual(0);
+					})
+				});
+			});
+		});
+
+		describe('randFloat', () => {
+			it('should return only floats', () => {
+				const grid = s.randGrid(16, 8).randFloat(0, 10);
+				grid.forEach(line => {
+					line.forEach(val => {
+						expect(typeof val).toEqual('number');
+					})
+				});
+			});
+		});
+
+		describe('randBoolean', () => {
+			it('should return only bools', () => {
+				const grid = s.randGrid(16, 8).randBool();
+				grid.forEach(line => {
+					line.forEach(val => {
+						expect(typeof val).toEqual('boolean');
+					})
+				});
+			});
+		});
+	});
+
 	describe('randFloat', () => {
 		const s = new Seed(defaultLcg);
 		it('should return a float', () => {
