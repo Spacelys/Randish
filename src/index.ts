@@ -6,6 +6,12 @@ interface IArrayCreator {
 	randBool: (percentTrue?: number) => Array<boolean>;
 }
 
+interface IGridCreator {
+	randInt: (min: number, max: number) => Array<Array<number>>;
+	randFloat: (min: number, max: number) => Array<Array<number>>;
+	randBool: (percentTrue?: number) => Array<Array<boolean>>;
+}
+
 // These utitlity functions are to be used to delay creation till a future time
 export const randInt = (min: number, max: number) => (seed: Seed): number => seed.randInt(min, max);
 export const randFloat = (min: number, max: number) => (seed: Seed): number => seed.randFloat(min, max);
@@ -109,6 +115,27 @@ export class Seed {
 				ary.map(() => this.randFloat(min, max)),
 			randBool: (percentTrue?: number) =>
 				ary.map(() => this.randBool(percentTrue)),
+		};
+	}
+
+	public randGrid(w: number, h: number): IGridCreator {
+		const grid: Array<Array<number>> = new Array(h)
+			.fill(0)
+			.map((): Array<number> => new Array<number>(w).fill(0));
+
+		return {
+			randInt: (min: number, max: number) =>
+				grid.map((line) =>
+					line.map(() => this.randInt(min, max))
+				),
+			randFloat: (min: number, max: number) =>
+				grid.map((line) =>
+					line.map(() => this.randFloat(min, max))
+				),
+			randBool: (percentTrue?: number) =>
+				grid.map((line) =>
+					line.map(() => this.randBool(percentTrue))
+				),
 		};
 	}
 
